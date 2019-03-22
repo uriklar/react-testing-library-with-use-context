@@ -1,37 +1,30 @@
 import React from "react";
-
-import { render, fireEvent, cleanup } from "react-testing-library";
+import { render as rtlRender, fireEvent, cleanup } from "react-testing-library";
 import MenuItem from "../MenuItem";
+import {Provider} from '../Provider'
+import Store from '../Store'
 
 afterEach(cleanup);
 
-const renderComponent = ({ category }) => {
-  jest.mock("../Provider", () => {
-    const React = require("react");
-    const Store = require("../Store").default;
-
-    const StoreContext = React.createContext(new Store());
-    return {
-      StoreContext
-    };
-  });
-  return render(<MenuItem category={category} />);
-};
+function render(ui, {store = new Store(), ...options} = {}) {
+  function Wrapper(props) {
+    return <Provider value={store} {...props} />
+  }
+  return rtlRender(ui, {wrapper: Wrapper, ...options})
+}
 
 test("should show span after clicking category title", () => {
-  const { queryByText, getByText } = renderComponent({
-    category: "size"
-  });
+  const { queryByText, getByText } = render(<MenuItem category="size" />, {store: new Store()});
 
   expect(queryByText(/size is selected/i)).toBeNull();
 
   fireEvent.click(getByText(/size/i));
-  expect(getByText(/size is selected/i)).toBeNull();
+  expect(getByText(/size is selected/i)).not.toBeNull();
+
 });
+
 test("should show dropdown with correct options", () => {
-  const { getByText, queryByText } = renderComponent({
-    category: "size"
-  });
+  const { queryByText } = render(<MenuItem category="size" />);
 
   expect(queryByText(/size is selected/i)).toBeNull();
 });
