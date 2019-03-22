@@ -2,20 +2,29 @@ import React from "react";
 
 import { render, fireEvent, cleanup } from "react-testing-library";
 import MenuItem from "../MenuItem";
+import Store from "../Store";
 
 afterEach(cleanup);
 
 const renderComponent = ({ category }) => {
-  jest.mock("../Provider", () => {
-    const React = require("react");
-    const Store = require("../Store").default;
+  // jest.mock("../Provider", () => {
+  //   const React = require("react");
+  //   const Store = require("../Store").default;
 
-    const StoreContext = React.createContext(new Store());
-    return {
-      StoreContext
-    };
-  });
-  return render(<MenuItem category={category} />);
+  //   const StoreContext = React.createContext(new Store());
+  //   return {
+  //     StoreContext
+  //   };
+  // });
+  const StoreContext = React.createContext();
+  // tried this too:
+  // const StoreContext = React.createContext(new Store())
+  // and then not passing a value prop
+  return render(
+    <StoreContext.Provider value={new Store()}>
+      <MenuItem category={category} />
+    </StoreContext.Provider>
+  );
 };
 
 test("should show span after clicking category title", () => {
