@@ -1,8 +1,8 @@
-import { useContext, useCallback } from "react";
-import { StoreContext } from "./Provider";
+import { useCallback } from "react";
+import { useStore } from "./Provider";
 
 export default function({ category }) {
-  const store = useContext(StoreContext);
+  const store = useStore();
   const isSelected = store.selectedCategory === category;
   const onSelect = useCallback(() => {
     store.selectCategory(category);
